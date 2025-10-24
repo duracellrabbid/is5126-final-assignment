@@ -223,7 +223,7 @@ def main():
         
         # Display data preview
         st.subheader("📊 Data Preview")
-        st.dataframe(df.head(10), use_container_width=True)
+        st.dataframe(df.head(10), width='stretch')
         
         # Show data statistics
         with st.expander("📈 View Data Statistics"):
@@ -231,8 +231,8 @@ def main():
         
         # Predict button
         st.markdown("---")
-        
-        if st.button("🔮 Generate Predictions", type="primary", use_container_width=True):
+
+        if st.button("🔮 Generate Predictions", type="primary", width='stretch'):
             try:
                 # Convert to PredictionRequest
                 with st.spinner("Preparing prediction request..."):
@@ -259,9 +259,9 @@ def main():
                         for pred in prediction_response.predictions
                     ]
                     predictions_df = pd.DataFrame(predictions_data)
-                    
-                    st.dataframe(predictions_df, use_container_width=True)
-                    
+
+                    st.dataframe(predictions_df, width='stretch')
+
                     # Show recommendations if available
                     if prediction_response.recommendations:
                         st.subheader("💡 Recommendations")
