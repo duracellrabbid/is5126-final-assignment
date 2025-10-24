@@ -58,7 +58,7 @@ async def predict(request: PredictionRequest):
 			status="success",
 			message="Predictions generated successfully.",
 			predictions=predictions,
-			recommendations=""  # added missing required parameter
+			recommendations="No recommendation yet"  # added missing required parameter
 		)
 	except Exception as e:
 		error_details = traceback.format_exc()

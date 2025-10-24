@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # API Configuration
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "http://localhost:5001"
 
 def validate_file_type(uploaded_file) -> tuple[bool, str]:
     """Validate if the uploaded file is CSV or Excel"""
