@@ -1,6 +1,6 @@
 from email import message
 from pydantic import BaseModel, Field
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Literal
 
 
 class UserFeatures(BaseModel):
@@ -40,7 +40,8 @@ class BaseResponse(BaseModel):
 	message: Optional[str] = Field(None, description="Optional message providing additional information")
 class UserPrediction(BaseModel):
 	user_id: str = Field(..., description="Unique identifier for the user")
-	prediction: str = Field(..., description="Prediction result for the user")
+	prediction: Literal[0, 1] = Field(..., description="Prediction result for the user (0 or 1)")
+	probability: float = Field(..., description="Probability associated with the prediction")
 
 class PredictionResponse(BaseResponse):
 	predictions: List[UserPrediction] = Field(..., description="List of predictions for the input features")

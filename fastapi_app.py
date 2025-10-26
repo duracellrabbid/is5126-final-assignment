@@ -1,4 +1,5 @@
 import json
+from random import random, choice
 import time
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, validator
@@ -44,21 +45,50 @@ app = FastAPI(
 	lifespan=lifespan
 )
 
+def convert_features_to_dataframe(user_features_list: list[UserFeatures]) -> pd.DataFrame:
+	"""
+	Convert a list of UserFeatures to a pandas DataFrame.
+	"""
+	features_list = [feature.model_dump() for feature in user_features_list]
+	return pd.DataFrame(features_list)
+
+def perform_prediction(input_df: pd.DataFrame) -> np.ndarray:
+	"""
+	Perform a mock prediction by returning a probability for the positive class for each row.
+	Replace this with model.predict_proba(input_df)[:, 1] when a real model is loaded.
+	"""
+	# Use a reproducible random generator for mock probabilities
+	# Provide an explicit seed to satisfy the requirement and ensure reproducibility.
+	rng = np.random.default_rng(42)
+	probs = rng.random(size=len(input_df))
+	return probs
+
 @app.post("/predict", response_model=PredictionResponse, responses={500: {"model": ErrorResponse}})
 async def predict(request: PredictionRequest):
 	try:
 		# Convert list of UserFeatures to DataFrame
-		# features_list = [feature.model_dump() for feature in request.features]
-		# input_df = pd.DataFrame(features_list)
+		input_df = convert_features_to_dataframe(request.features)
 
-		# No model yet, we simulate predictions
-		predictions = [UserPrediction(user_id=feature.UserId, prediction="No Prediction Yet") for feature in request.features]
-		# Provide required fields "message" and "recommendations" expected by PredictionResponse
+		# Get mock probabilities for each row
+		probabilities = perform_prediction(input_df)
+
+		# Build UserPrediction list: label = 1 if prob >= 0.5 else 0
+		predictions = []
+		for feature, prob in zip(request.features, probabilities):
+			label = 1 if prob >= 0.5 else 0
+			predictions.append(
+				UserPrediction(
+					user_id=feature.UserId,
+					prediction=label,
+					probability=float(round(float(prob), 4))
+				)
+			)
+
 		return PredictionResponse(
 			status="success",
 			message="Predictions generated successfully.",
 			predictions=predictions,
-			recommendations="No recommendation yet"  # added missing required parameter
+			recommendations="No recommendation yet"
 		)
 	except Exception as e:
 		error_details = traceback.format_exc()

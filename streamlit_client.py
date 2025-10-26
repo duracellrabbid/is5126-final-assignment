@@ -254,7 +254,8 @@ def main():
                     predictions_data = [
                         {
                             "User ID": pred.user_id,
-                            "Prediction": pred.prediction
+                            "Prediction": pred.prediction,
+                            "Probability": pred.probability
                         }
                         for pred in prediction_response.predictions
                     ]
