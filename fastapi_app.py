@@ -1,20 +1,37 @@
+import json
+import os
 from random import random, choice
 import time
 from fastapi import FastAPI, HTTPException
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional, final
 import joblib
 import numpy as np
 import pandas as pd
 
 from models import (
-	UserFeatures, PredictionRequest, PredictionResponse,
+	RecommendationRequest, UserFeatures, PredictionRequest, PredictionResponse,
 	HealthResponse, InfoResponse, ErrorResponse, UserPrediction
 )	
-
 
 from sklearn.pipeline import Pipeline
 import traceback
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
+
+def load_env_variables():
+	load_dotenv()
+	open_api_key = os.environ.get('OPENAI_API_KEY', '')
+	print("Environment variables loaded.")
+
+	return open_api_key
+
+open_api_key = load_env_variables()
+if open_api_key:
+	print("OpenAI API key loaded successfully.")
+
+from rag_and_llm.agents import debate
+from rag_and_llm.messages import pretty_print_messages
 
 SERVICE_NAME = "Employee Attrition Prediction Service"
 
@@ -39,9 +56,11 @@ async def lifespan(app: FastAPI):
 	app.state.start_time = time.time()
 	try:
 		# Load the model during startup
+
 		prediction_pipeline = load_model()
 		if prediction_pipeline is not None:
 			print("Model loaded successfully.")
+
 		print("Server started successfully.")
 	except Exception as e:
 		print(f"Error loading model: {e}")
@@ -54,7 +73,6 @@ app = FastAPI(
 	title=SERVICE_NAME,
 	lifespan=lifespan
 )
-
 
 
 
@@ -80,6 +98,56 @@ def perform_mock_prediction(input_df: pd.DataFrame) -> np.ndarray:
 
 	
 	return probs
+def get_ai_messages(messages: Any, sender_name: Optional[str] = "director_agent"):
+	"""Print all message contents in order, with sender name if available."""
+	message_list = []
+	for i, msg in enumerate(messages, start=1):
+		sender = getattr(msg, "name", None)
+		msg_type = type(msg).__name__
+		content = getattr(msg, "content", "")
+
+		print(f"\n[{i}] {msg_type}{' (' + sender + ')' if sender else ''}:")
+		print(content or "(empty)")
+		if sender == sender_name:
+			message_list.append(content)
+	return message_list
+
+def make_recommendation(recommendation_request: RecommendationRequest) -> str:
+	"""
+	Generate recommendations based on user features and predictions.
+	"""
+	# Placeholder recommendation logic
+	schema = RecommendationRequest.model_json_schema()
+	# Here you would integrate with an LLM or other logic to generate recommendations
+	prompt = f"""
+You are a HR consultant specializing in employee retention. You are given a schema, user features, and their attrition predictions.
+
+Based on the following features and predictions, provide recommendations to reduce attrition:
+Schema: {schema}
+Features: {recommendation_request.features}
+Predictions: {recommendation_request.predictions}
+
+Provide actionable recommendations for the company based on the above data. Justify the recommendations with reference to the features and predictions.
+
+Do not provide recommendation for individual users; focus on overall strategies to improve retention.
+"""
+	message = { "messages": [
+			{
+				"role": "user",
+				"content": prompt,
+			}
+		]
+	}
+
+	print("Starting debate among agents for recommendation...")
+	for chunk in debate.stream(message):
+		pretty_print_messages(chunk, last_message=True)
+
+	final_message_history = chunk["director_agent"]["messages"]
+	print("Final message history obtained from debate.\n\n")
+	message_list = get_ai_messages(final_message_history)
+	print("\n\nRecommendation generation completed.")
+	return "\n".join(message_list)
 
 @app.post("/predict", response_model=PredictionResponse, responses={500: {"model": ErrorResponse}})
 async def predict(request: PredictionRequest):
@@ -100,12 +168,20 @@ async def predict(request: PredictionRequest):
 						probability=float(round(float(prob), 4))
 					)
 				)
-
+			recommendation_request = RecommendationRequest(
+				features=request.features,
+				predictions=predictions
+			)
+			recommendation = "No recommendation yet"
+			try:
+				recommendation = make_recommendation(recommendation_request)
+			except Exception as e:
+				print(f"Error generating recommendations: {e}")
 			return PredictionResponse(
 				status="success",
 				message="Predictions generated successfully.",
 				predictions=predictions,
-				recommendations="No recommendation yet"
+				recommendations=recommendation
 			)
 		else:
 			raise Exception("Prediction pipeline is not loaded.")

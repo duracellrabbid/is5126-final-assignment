@@ -1,4 +1,5 @@
 from email import message
+from pyexpat import features
 from pydantic import BaseModel, Field
 from typing import Dict, Optional, List, Literal
 
@@ -42,6 +43,7 @@ class UserFeatures(BaseModel):
 class PredictionRequest(BaseModel):
 	features: List[UserFeatures] = Field(..., description="List of user features for prediction")
 
+
 class BaseResponse(BaseModel):
 	status: str = Field(..., description="Status of the response")
 	message: Optional[str] = Field(None, description="Optional message providing additional information")
@@ -66,3 +68,7 @@ class InfoResponse(BaseResponse):
 
 class ErrorResponse(BaseResponse):
 	error_details: Optional[str] = Field(None, description="Details about the error encountered")
+
+class RecommendationRequest(BaseModel):
+	features: List[UserFeatures] = Field(..., description="List of user features for generating recommendations")
+	predictions: List[UserPrediction] = Field(..., description="List of user predictions corresponding to the features")

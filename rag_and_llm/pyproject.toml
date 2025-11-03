@@ -1,0 +1,20 @@
+[project]
+name = "is5126-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "crawl4ai>=0.7.6",
+    "langchain-chroma>=1.0.0",
+    "langchain[chroma,ollama,openai]>=1.0.1",
+    "langgraph>=1.0.1",
+    "langgraph-supervisor>=0.0.28",
+    "openai>=2.6.0",
+    "pandas>=2.3.3",
+    "pillow>=12.0.0",
+    "pydantic>=2.12.3",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.5",
+]
