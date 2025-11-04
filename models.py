@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 from typing import Dict, Optional, List, Literal
 
@@ -59,7 +58,7 @@ class HealthResponse(BaseResponse):
 	uptime: float = Field(..., description="Service uptime in seconds")
 	status: str = Field(..., description="Health status of the service")	
 	model_status: str = Field(..., description="Status of the model")
- 
+
 class InfoResponse(BaseResponse):
 	service_name: str = Field(..., description="Name of the service")
 	model_version: str = Field(..., description="Version of the deployed model")

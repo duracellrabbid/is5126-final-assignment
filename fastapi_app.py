@@ -138,7 +138,7 @@ Do not provide recommendation for individual users; focus on overall strategies 
 			}
 		]
 	}
-
+	print("xxxx")
 	print("Starting debate among agents for recommendation...")
 	for chunk in debate.stream(message):
 		pretty_print_messages(chunk, last_message=True)
@@ -199,6 +199,7 @@ async def predict(request: PredictionRequest):
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
+	print("Performing health check...")
 	uptime = time.time() - app.state.start_time
 	return HealthResponse(
 		status="healthy",
@@ -209,6 +210,7 @@ async def health_check():
 
 @app.get("/info", response_model=InfoResponse)
 async def service_info():
+	print("Retrieving service information...")
 	return InfoResponse(
 		status="success",
 		message="Service information retrieved successfully.",
