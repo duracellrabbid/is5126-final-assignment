@@ -219,15 +219,16 @@ def setup_health_button():
             st.error("❌ Service is unavailable")
 
 def setup_configuration_sidebar():
-    st.sidebar.header("⚙️ Configuration")
-    
-    # API URL configuration
-    global API_BASE_URL
-    API_BASE_URL = st.sidebar.text_input("API Base URL", value=API_BASE_URL)
-    
-    setup_health_button()
+    with st.sidebar:
+        st.sidebar.header("⚙️ Configuration")
+        
+        # API URL configuration
+        global API_BASE_URL
+        API_BASE_URL = st.sidebar.text_input("API Base URL", value=API_BASE_URL)
+        
+        setup_health_button()
 
-    setup_info_button()
+        setup_info_button()
 
 def setup_file_upload_section() -> Any:
     # File uploader
