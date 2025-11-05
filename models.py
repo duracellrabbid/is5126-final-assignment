@@ -3,7 +3,6 @@ from typing import Dict, Optional, List, Literal
 
 
 class UserFeatures(BaseModel):
-	UserId: str = Field(..., description="Unique identifier for the user")
 	Age: int = Field(..., description="Age of the employee")
 	BusinessTravel: str = Field(..., description="Business travel frequency")
 	DailyRate: int = Field(..., description="Daily rate of the employee")

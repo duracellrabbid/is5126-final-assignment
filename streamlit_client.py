@@ -1,5 +1,3 @@
-from turtle import setup
-from fastapi import UploadFile
 import streamlit as st
 import requests
 import pandas as pd
@@ -50,6 +48,7 @@ def validate_file_type(uploaded_file: Any) -> tuple[bool, str]:
     return True, "Valid file type"
 
 def make_prediction_offline(df: pd.DataFrame) -> Optional[PredictionResponse]:
+    """Make predictions using the offline model pipeline"""
     global offline_model_pipeline
     if offline_model_pipeline is None:
         st.error("Offline model pipeline is not loaded.")
@@ -93,7 +92,7 @@ def load_data(uploaded_file: Any) -> Optional[pd.DataFrame]:
 def validate_dataframe_columns(df: pd.DataFrame) -> tuple[bool, str]:
     """Validate that the dataframe has all required columns for UserFeatures"""
     required_columns = [
-        'UserId', 'Age', 'BusinessTravel', 'DailyRate', 'Department', 
+        'Age', 'BusinessTravel', 'DailyRate', 'Department', 
         'DistanceFromHome', 'Education', 'EducationField',
         # 'EmployeeCount',  <- removed: not a parameter in UserFeatures
         'EmployeeNumber', 'EnvironmentSatisfaction', 'JobInvolvement', 
@@ -120,7 +119,6 @@ def convert_df_to_prediction_request(df: pd.DataFrame) -> PredictionRequest:
 
     for _, row in df.iterrows():
         user_feature = UserFeatures(
-            UserId=str(row['UserId']),
             Age=int(row['Age']),
             BusinessTravel=str(row['BusinessTravel']),
             DailyRate=int(row['DailyRate']),
@@ -250,7 +248,7 @@ def setup_instructions_section():
     
     with st.expander("📖 Required Columns"):
         required_cols = [
-            'UserId', 'Age', 'BusinessTravel', 'DailyRate', 'Department', 
+            'Age', 'BusinessTravel', 'DailyRate', 'Department', 
             'DistanceFromHome', 'Education', 'EducationField',
             # 'EmployeeCount',  <- removed
             'EmployeeNumber', 'EnvironmentSatisfaction', 'JobInvolvement', 

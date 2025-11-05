@@ -82,7 +82,6 @@ def convert_features_to_dataframe(user_features_list: list[UserFeatures]) -> pd.
 	"""
 	features_list = [feature.model_dump() for feature in user_features_list]
 	df = pd.DataFrame(features_list)
-	df = df.drop(columns=["UserId"])  # Drop UserId for prediction
 	return df
 
 def perform_mock_prediction(input_df: pd.DataFrame) -> np.ndarray:
@@ -138,7 +137,6 @@ Do not provide recommendation for individual users; focus on overall strategies 
 			}
 		]
 	}
-	print("xxxx")
 	print("Starting debate among agents for recommendation...")
 	for chunk in debate.stream(message):
 		pretty_print_messages(chunk, last_message=True)
@@ -151,11 +149,23 @@ Do not provide recommendation for individual users; focus on overall strategies 
 
 @app.post("/predict", response_model=PredictionResponse, responses={500: {"model": ErrorResponse}})
 async def predict(request: PredictionRequest):
+	"""Make predictions based on user features.
+
+	Args:
+		request (PredictionRequest): The request object containing user features.
+
+	Raises:
+		Exception: If an error occurs during prediction.
+		HTTPException: If the prediction pipeline is not loaded.
+
+	Returns:
+		_type_: The prediction response containing user predictions and recommendations.
+	"""
 	try:
 		# Convert list of UserFeatures to DataFrame
 		input_df = convert_features_to_dataframe(request.features)
-		# Get mock probabilities for each row
-		if prediction_pipeline is not None:
+
+		if prediction_pipeline is not None: # Ensure the model is loaded
 
 			probs = prediction_pipeline.predict_proba(input_df)[:, 1]
 			preds = prediction_pipeline.predict(input_df)
@@ -163,7 +173,7 @@ async def predict(request: PredictionRequest):
 			for feature, prob, pred in zip(request.features, probs, preds):
 				predictions.append(
 					UserPrediction(
-						user_id=feature.UserId,
+						user_id=str(feature.EmployeeNumber),
 						prediction=pred,
 						probability=float(round(float(prob), 4))
 					)
@@ -174,7 +184,7 @@ async def predict(request: PredictionRequest):
 			)
 			recommendation = "No recommendation yet"
 			try:
-				recommendation = make_recommendation(recommendation_request)
+				recommendation = make_recommendation(recommendation_request) # Generate recommendations
 			except Exception as e:
 				print(f"Error generating recommendations: {e}")
 			return PredictionResponse(

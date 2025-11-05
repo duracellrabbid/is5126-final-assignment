@@ -1,6 +1,0 @@
-UserId,Age,BusinessTravel,DailyRate,Department,DistanceFromHome,Education,EducationField,EmployeeNumber,EnvironmentSatisfaction,Gender,HourlyRate,JobInvolvement,JobLevel,JobRole,JobSatisfaction,MaritalStatus,MonthlyIncome,MonthlyRate,NumCompaniesWorked,Over18,OverTime,PercentSalaryHike,PerformanceRating,RelationshipSatisfaction,StandardHours,StockOptionLevel,TotalWorkingYears,TrainingTimesLastYear,WorkLifeBalance,YearsAtCompany,YearsInCurrentRole,YearsSinceLastPromotion,YearsWithCurrManager
-U001,34,Travel_Rarely,1102,Sales,2,3,Life Sciences,1001,3,Male,40,3,2,Sales Executive,4,Single,5993,19479,2,Y,Yes,11,3,2,80,0,10,2,3,6,2,3,2
-U002,29,Travel_Frequently,279,Research & Development,10,2,Medical,1002,4,Female,25,2,1,Laboratory Technician,2,Married,2909,12345,1,Y,No,12,3,3,80,1,6,3,2,4,1,2,1
-U003,41,Non-Travel,1373,Human Resources,1,4,Other,1003,2,Female,34,4,3,Human Resources,3,Divorced,4200,15000,5,Y,No,14,3,4,80,2,15,2,2,11,3,8,2
-U004,36,Travel_Rarely,591,Research & Development,3,3,Life Sciences,1004,3,Male,30,3,2,Research Scientist,4,Married,3468,11234,3,Y,Yes,13,4,2,80,1,12,2,3,9,4,6,6
-U005,47,Travel_Frequently,875,Sales,12,2,Marketing,1005,4,Male,45,3,4,Manager,4,Married,8750,21000,7,Y,No,20,4,3,80,2,22,1,2,20,5,10,12
